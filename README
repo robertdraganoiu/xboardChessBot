@@ -1,0 +1,196 @@
+LotBot v1.0
+Proiect PA - Etapa 2
+
+Studenti: Robert Draganoiu;
+	  Liviu Enache;
+	  Vlad Sandu.
+Grupa: 322CA.
+
+
+--- Instructiuni de compilare:
+
+make build - construieste executabilul cu numele de lot_bot
+make run - ruleaza executabilul
+make clean - sterge executabilul
+
+*make check - ruleaza o comanda de check cu 10 meciuri pe xboard, impotriva
+botului fairymax cu depth 2
+
+
+--- Structura proiectului:
+
+Nivelul 1. Constructia pieselor utilizate pe tabla de joc, realizata in fisierele
+pieces.h/.cpp.
+
+Fiecare piesa este o instanta a unei clase care extinde clasa Piece, avand campuri
+cu informatii despre pozitia pe tabla, valoarea, side-ul de joc si tipul piesei.
+Utilitatea nivelului 1 este ca abstractizeaza obiectul piesa, folosi ulterior pe
+tabla de joc.
+
+
+Nivelul 2. Tabla de joc, implementata printr-o instanta a clasei Board, in 
+fisierele board.h/.cpp.
+
+La acest nivel, sunt realizate toate operatiile care tin de implementarea
+regulilor sahului. Cateva repere sunt metodele:
+	*check_all_moves: ->apeleaza metodele de verificare a miscarilor posibile
+			  pentru fiecare piesa ramasa pe tabla pentru un side dat,
+			  filtrand doar miscarile care nu sfarsesc in sah pentru
+			  side-ul care muta;
+	*move_piece: ->muta o piesa pe tabla folosind coordonatele primite;
+		     ->nu verifica validitatea miscarii, ci doar daca piesa
+		     care se vrea a fi mutata este la coordonatele de start;
+		     ->gestioneaza mutarile speciale precum promovare, rocada,
+	 	     en passant;
+	*undo_move: -> realizeaza inversul operatiei move.
+			  
+
+Nivelul 3. Aplicarea algoritmului de minimax, realizata prin intermediul unei
+instante a clasei LotBot (din lot_bot.h/.cpp).
+
+Instanta clasei LotBot contine tabla de joc, cu ajutorul careia poate genera
+toate miscarile valide pentru un side la un moment dat. Metodele de referinta
+sunt:
+	*usermove: ->primeste comanda de mutare de la nivelul superior, o parseaza
+		   in coordonatele boardului intern si actualizeaza tabla cu
+		   cu mutarea adversarului;
+	*botmove ->primeste semnalul de a muta de la nivelul superior, apeleaza
+		    algoritmul de minimax si intoarce comanda parsata pentru
+		    xboard;
+	*minimax ->implementeaza algoritmul minimax cu optimizarea alpha-beta
+		   pruning; calculeaza cea mai buna miscare pentru bot in situatia
+		   curenta;
+	*evaluate ->realizeaza o evaluare statica a boardului, stabilind un scor
+		    al botului, pe care nivelele de max incearca sa il maximizeze,
+		    iar nivelele de min sa il minimizeze.
+		   
+
+Nivelul 4. Comunicarea lotului cu boardul, realizata de o instanta a clasei
+EngineDriver (din EngineDriver.h/.cpp):
+
+-comunicarea este realizata in 2 etape din metode cu nume echivalente:
+	*board_setup: ->gestioneaza comenzile new si protoboard;
+		      ->se asigura ca jocul incepe corespunzator;
+	*game_loop: ->schimba side-ul botului si side to move in functie de
+		    comenzile black, white, force, new, go;
+		    ->semnaleaza botul atunci cand este tura lui si trimite
+		    xboardului miscarea calculata de bot;
+	            ->trimite botului miscarea primita de la adversar, pentru
+		    a o putea muta pe tabla interna;
+		    -> reseteaza botul atunci cand jocul curent se termina.
+
+
+Nivelul 5. main.cpp -instantiaza clasa EngineDriver si ii ruleaza metoda run.
+
+Extra: utils.h - contine definitii utile in tot programul, precum enum-uri de tip
+sau matrice de evaluare.
+
+
+--- Abordarea algoritmica a etapei:
+
+Detalii relevante:
+
+-mutarile pe tabla interna se fac intr-un mod eficient, folosind un hash_map si
+doua stive:
+	*pieces_status ->hashmap care contine adresele pieselor in memorie si
+			 statusul lor - dead/alive (false/true).
+	*moves ->stiva cu informatii despre fiecare mutare (struct MoveInfo in
+		 board.h), fiecare element continand informatii despre coordonatele
+		 de mutarea piesei pe tabla, referinta la piesa care s-a mutat si
+	         informatia daca o piesa a fost "luata" la mutarea respectiva;
+	       ->in momentul in care o piesa se muta pe tabla, o structura MoveInfo
+		 este adaugata in varful stivei, astfel incat metoda undo va lua
+		 informatia de care are nevoie din stack.top() si va inversa mutarea.
+	*dead_pieces ->stiva cu referintele pieselor moarte, care functioneaza in
+		       paralel cu "moves". In momentul in care o mutare se incheie
+		       cu luarea unei piese, pe langa updatarea statusului, adresa
+		       piesei adaugata in stiva de piese moarte, pentru ca undo_move
+		       sa o poata accesa imediat si sa o adauge la locul ei pe tabla.
+
+-functia de evaluare are la baza 2 elemente: valorile pieselor si valorile pozitiilor
+pieselor pe tabla:
+	*valorile pieselor: ->relative una la cealalta similar valorilor din cartile
+			    de sah, cu mici ajustari pentru a conserva anumite piese
+			    mai mult decat pe celelalte;
+			    ->in contextul functiei de evaluare, consideram ca botul
+		 	    se afla intr-o pozitie cu atat mai buna cu cat diferenta
+		            dintre valorile materialului lui si ale materialului
+		            adversarului este mai mare.
+	*valorile pozitiilor pieselor:
+			    ->calculate prin intermediul unor matrice de evaluare,
+			    adauga/scad din valoarea piesei in functie de pozitia
+			    ei pe tabla; de exemplu, consideram ca un cal in pozitie
+			    centrala este mai valoros decat unul in margine, pentru
+			    ca va avea mai multe miscari la dispozitie si va
+			    influenta casute mai importante de pe tabla;
+                            ->in contextul functiei de evaluare, in momentul
+			    adaugarii valorii piesei la suma totala, se ia in calcul
+			    si pozitia ei pe tabla;
+			    -> botul contine doua seturi de matrice, una pentru start
+			    si una pentru mid/end game.
+	*evaluare grabita: daca unul dintre jucatori de afla in mat/pat, evaluarea se
+		           va face imediat, rezultand intr-un scor foarte mare/foarte
+			   mic, in functie de cine este cel care a ramas fara mutari.
+
+-algoritmul minimax: 
+	*foloseste optimizarea alpha-beta pruning si, in momentul de fata, poate
+	realiza mutari cu depth 4 in mai putin de o secunda, cu toate piesele
+	pe tabla, pe un procesor Intel(R) Core(TM) i7-4720HQ CPU @ 2.60GHz.
+
+	*mutarile sunt calculate in ordine probabilitatii de a fi alese, pentru a
+	maximiza eficienta optimizarii alpha-beta, botul fiind, astfel, capabil sa
+	calculeze mutari cu depth 6 in endgame fara dificultate.
+
+	*setarea de la momentul curent este sa mute cu depth 4 pana au fost luate
+	jumatate din piese, incluzand reginele, moment in care trece la depth 6;
+	de asemenea, daca pe tabla sunt mai putin de 8 piese, va trece la depth
+	6 indiferent de tipul pieselor ramase.
+
+
+--- Surse de inspiratie:
+
+*chessprogramming.com - pentru numeroase articole despre dezvoltarea botilor de sah.
+
+
+--- Responsabilitatile membrilor echipei:
+
+Nivelul 4:
+- realizarea comunicarii xboardului cu botul - Robert
+- debugging nivelul 4 - Robert, Vlad, Liviu
+
+Nivelul 3:
+- lucrul la algoritmul de minimax - Vlad, Robert, Liviu
+- optimizarea cu alpha-beta pruning - Vlad
+- functia de evaluare - Vlad, Robert, Liviu
+- gestionarea valorilor pentru evaluare - Robert, Vlad
+- shiftarea dinamica a depth-ului si a matricelor de evaluare - Vlad, Robert
+- debugging nivelul 3 - Robert, Vlad, Liviu
+
+Nivelul 2:
+- administrarea boardului intern(move/undo) - Liviu
+- verificarea miscarilor posibile si a validitatii lor - Vlad
+- implementarea regulilor exceptionale ale jocului - Liviu, Robert
+- debugging nivelul 2 - Liviu, Vlad, Robert
+
+Nivelul 1:
+- crearea infrastructurii de clase - Liviu
+- debugging nivelul 1 - Liviu, Vlad
+
+Extra:
+- scrierea documentatiei - Robert
+- administrarea comunicarii intre nivele - Liviu, Robert, Vlad
+- documentare referitor la moduri de dezvoltare a botului - Vlad, Liviu, Robert
+
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
