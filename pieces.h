@@ -53,9 +53,9 @@ public:
 	Piece(Sides side, int x, int y) : side(side), x(x), y(y) { }
 
 	int get_x();
-	int set_x(int x);
+	void set_x(int x);
 	int get_y();
-	int set_y(int y);
+	void set_y(int y);
 	bool has_moved();
 	void set_has_moved(bool status);
 	PieceType get_piece_type();

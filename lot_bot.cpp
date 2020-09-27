@@ -111,7 +111,7 @@ string LotBot::botmove() {
     // }
 
     // get best move
-    negamax_info info = minimax(side, base_depth, INT32_MIN, INT32_MAX);
+    minimax_info info = minimax(side, base_depth, INT32_MIN, INT32_MAX);
     Coords move_coords = info.move_coords;
 
     cerr << "MOVE SCORE: " << info.max << endl;
@@ -197,8 +197,8 @@ int LotBot::evaluate() {
     return sums[0] - sums[1];
 }
 
-negamax_info LotBot::minimax(Sides current_side, int depth, int alpha, int beta) {
-    negamax_info current;
+minimax_info LotBot::minimax(Sides current_side, int depth, int alpha, int beta) {
+    minimax_info current;
     current.max = INT32_MIN;
     // prepare next side
     Sides next_side;
@@ -236,7 +236,7 @@ negamax_info LotBot::minimax(Sides current_side, int depth, int alpha, int beta)
             board.move_piece(coords);
             
             // change side and compute score
-            negamax_info next = minimax(next_side, depth - 1, alpha, beta);
+            minimax_info next = minimax(next_side, depth - 1, alpha, beta);
             if(next.max > current.max) {
                 current.max = next.max;
                 current.move_coords = coords;
@@ -251,7 +251,7 @@ negamax_info LotBot::minimax(Sides current_side, int depth, int alpha, int beta)
             board.move_piece(coords);
             
             // change side and compute score
-            negamax_info next = minimax(next_side, depth - 1, alpha, beta);
+            minimax_info next = minimax(next_side, depth - 1, alpha, beta);
             if(next.max <= current.max || current.max == INT32_MIN) {
                 current.max = next.max;
                 current.move_coords = coords;
