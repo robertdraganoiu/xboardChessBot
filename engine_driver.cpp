@@ -38,11 +38,11 @@ void EngineDriver::base_setup() {
         }
 
         // sends setup features to engine
-        printf("feature usermove=1 debug=1 name=LOTBOT sigint=0 sigterm=0 san=0");
+        printf("feature usermove=1 debug=1 name=LOTBOT sigint=0 sigterm=0 san=0 colors=0");
         printf("feature done=1\n");
         fflush(stdout); 
 
-        for(int i = 0; i < 6; ++i) { // num features accept/reject answers
+        for(int i = 0; i < 7; ++i) { // num features accept/reject answers
             if(!fgets(this->inBuf, BUFFER_SIZE, stdin)) {
                 std::cerr << ("[ERROR] Expected feature accept/reject and did not receive. Terminated.\n");
                 exit(-1);
@@ -101,16 +101,7 @@ void EngineDriver::game_loop() {
             bot->set_side(FORCE_MODE);
             continue;
         } 
-        if(command.find("white") != std::string::npos) {
-            side_to_move = WHITE;
-            bot->set_side(BLACK);
-            continue;
-        } 
-        if (command.find("black") != std::string::npos) {
-            side_to_move = BLACK;
-            bot->set_side(WHITE);
-            continue;
-        }  
+ 
         if(command.find("quit") != std::string::npos) {
             cerr << "Quit received. Stopping engine.\n";
             exit(-1);

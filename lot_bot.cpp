@@ -114,7 +114,7 @@ string LotBot::botmove() {
     minimax_info info = minimax(side, base_depth, INT32_MIN, INT32_MAX);
     Coords move_coords = info.move_coords;
 
-    cerr << "MOVE SCORE: " << info.max << endl;
+    // cerr << "MOVE SCORE: " << info.max << endl;
     // no moves => checkmate or draw
     if(info.max <= INT32_MIN / 2) {
         // check lower depth for best moves (maybe opponent bots are dumb and do not see forced mate)

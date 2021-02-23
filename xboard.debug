@@ -1,0 +1,101 @@
+locale = LC_CTYPE=en_US.UTF-8;LC_NUMERIC=ro_RO.UTF-8;LC_TIME=ro_RO.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=ro_RO.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=ro_RO.UTF-8;LC_NAME=ro_RO.UTF-8;LC_ADDRESS=ro_RO.UTF-8;LC_TELEPHONE=ro_RO.UTF-8;LC_MEASUREMENT=ro_RO.UTF-8;LC_IDENTIFICATION=ro_RO.UTF-8
+recognized 'normal' (-1) as variant normal
+recognized 'normal' (-1) as variant normal
+recognized 'normal' (-1) as variant normal
+shuffleOpenings = 0
+shuffleOpenings = 0
+Version: xboard 4.9.1 + lot_bot ()
+Reset(1, 0) from gameMode 0
+recognized 'normal' (-1) as variant normal
+GameEnds(0, (null), 2)
+shuffleOpenings = 0
+StartChildProcess (dir=".") ./lot_bot
+133 >first : xboard
+protover 2
+136 <first : feature usermove=1 debug=1 name=LOTBOT sigint=0 sigterm=0 san=0 colors=0feature done=1
+136 >first : accepted usermove
+136 >first : accepted debug
+136 >first : accepted name
+136 >first : accepted sigint
+136 >first : accepted sigterm
+136 >first : accepted san
+136 >first : accepted colors
+136 >first : accepted done
+136 <first : [INFO] Game setup complete.
+137 >first : new
+random
+137 >first : level 40 20 0
+137 >first : post
+137 >first : hard
+137 <first : TURN: 0
+6951 >first : name robert
+6951 >first : time 120000
+6951 >first : otim 120000
+book hit = (NULL)
+6951 >first : go
+nps: w=-1, b=-1
+6953 <first : TURN: 0
+6997 <first : move b1c3
+9277 >first : time 119995
+9277 >first : otim 119772
+book hit = (NULL)
+9277 >first : usermove 9277 >first : d7d5
+9396 <first : move e2e3
+13847 >first : force
+18596 >first : new
+random
+18596 >first : level 40 20 0
+18596 >first : post
+18596 >first : hard
+18596 >first : force
+18596 >first : a2a3
+18596 >first : edit
+18596 >first : #
+18596 >first : Pf4
+18596 >first : Nc3
+18596 >first : Pe3
+18596 >first : Pa2
+18596 >first : Pb2
+18596 >first : Pc2
+18596 >first : Pd2
+18596 >first : Pg2
+18596 >first : Ph2
+18596 >first : Ra1
+18596 >first : Bc1
+18596 >first : Qd1
+18596 >first : Ke1
+18596 >first : Bf1
+18596 >first : Ng1
+18596 >first : Rh1
+18596 >first : c
+18596 >first : Ra8
+18596 >first : Nb8
+18596 >first : Bc8
+18596 >first : Qd8
+18596 >first : Ke8
+18596 >first : Bf8
+18596 >first : Ng8
+18596 >first : Rh8
+18596 >first : Pa7
+18596 >first : Pb7
+18596 >first : Pc7
+18596 >first : Pf7
+18596 >first : Pg7
+18596 >first : Ph7
+18596 >first : Pe6
+18596 >first : Pd5
+18596 >first : .
+EditPosDone
+18599 <first : TURN: 1
+20638 >first : name robert
+20638 >first : time 120000
+20638 >first : otim 120000
+book hit = (NULL)
+20638 >first : go
+nps: w=-1, b=-1
+20641 <first : TURN: 0
+20685 <first : move b1c3
+GameEnds(29, xboard exit, 2)
+26004 >first : result * {xboard exit}
+26004 >first : force
+26004 >first : quit

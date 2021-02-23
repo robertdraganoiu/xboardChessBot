@@ -316,14 +316,12 @@ int Board::king_safe_lanes(Piece* king) {
 	side == WHITE ? x_add = -1 : x_add = 1;
 	int count = 0;
 	for(int i = y - 1 ; i <= y + 1; ++i) {
-		cout << i << " ";
 		if(i > 8 && i < 1) {
 			count++;
 			continue;
 		}
 		bool lane_safe = false;
 		for(int j = x_add; j != x_add * 3; j += x_add) {
-			cout << "j ";
 			if(x + j < 1 || x + j > 8) {
 				lane_safe = true;
 				continue;
@@ -336,7 +334,6 @@ int Board::king_safe_lanes(Piece* king) {
 		if(lane_safe) {
 			count++;
 		}
-		cout << endl;
 	}
 	return count;
 }
