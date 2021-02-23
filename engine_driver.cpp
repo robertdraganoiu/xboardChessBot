@@ -19,35 +19,34 @@ void EngineDriver::run() {
     game_loop();
     
     std::cerr << "[INFO] Game ended.\n";
-    
 }
 
 void EngineDriver::base_setup() {
-        // receives xboard and protover messages
-        if(!fgets(this->inBuf, BUFFER_SIZE, stdin) 
-            || !fgets(this->inBuf, BUFFER_SIZE, stdin)){
-            std::cerr << ("[ERROR] Did not receive handshake.\n");
-            exit(-1);
-        }
+    // receives xboard and protover messages
+    if(!fgets(this->inBuf, BUFFER_SIZE, stdin) 
+        || !fgets(this->inBuf, BUFFER_SIZE, stdin)){
+        std::cerr << ("[ERROR] Did not receive handshake.\n");
+        exit(-1);
+    }
 
-        // checks second message to be protover
-        std::string command(inBuf);
-        if(command.find("protover") == std::string::npos) {
-            std::cerr << ("[ERROR] Did not receive protover.\n");
-             std::cout << "quit";
-        }
+    // checks second message to be protover
+    std::string command(inBuf);
+    if(command.find("protover") == std::string::npos) {
+        std::cerr << ("[ERROR] Did not receive protover.\n");
+         std::cout << "quit";
+    }
 
-        // sends setup features to engine
-        printf("feature usermove=1 debug=1 name=LOTBOT sigint=0 sigterm=0 san=0 colors=0");
-        printf("feature done=1\n");
-        fflush(stdout); 
+    // sends setup features to engine
+    printf("feature usermove=1 debug=1 name=LOTBOT sigint=0 sigterm=0 san=0 colors=0");
+    printf("feature done=1\n");
+    fflush(stdout); 
 
-        for(int i = 0; i < 7; ++i) { // num features accept/reject answers
-            if(!fgets(this->inBuf, BUFFER_SIZE, stdin)) {
-                std::cerr << ("[ERROR] Expected feature accept/reject and did not receive. Terminated.\n");
-                exit(-1);
-            }
+    for(int i = 0; i < 7; ++i) { // num features accept/reject answers
+        if(!fgets(this->inBuf, BUFFER_SIZE, stdin)) {
+            std::cerr << ("[ERROR] Expected feature accept/reject and did not receive. Terminated.\n");
+        exit(-1);
         }
+    }
 }
 
 void EngineDriver::game_loop() {
